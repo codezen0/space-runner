@@ -5,7 +5,7 @@ use App\Models\Score;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 
-Route::get('/game', function () {
+Route::get('/', function () {
     $highScores = Score::orderBy('coins', 'desc')->take(5)->get();
     $totalCoins = Score::sum('coins');
     $myItems = Purchase::all();
