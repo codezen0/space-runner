@@ -479,21 +479,21 @@ document.getElementById('closeStoreButton').addEventListener('click', hideStoreM
 
 // Store Tab Switching
 const skinsTab = document.getElementById('skinsTab');
-const upgradesTab = document.getElementById('upgradesTab');
+const powerupsTab = document.getElementById('powerupsTab');
 const skinsSection = document.getElementById('skinsSection');
-const upgradesSection = document.getElementById('upgradesSection');
+const powerupsSection = document.getElementById('powerupsSection');
 
 skinsTab.addEventListener('click', () => {
     skinsSection.style.display = 'grid';
-    upgradesSection.style.display = 'none';
+    powerupsSection.style.display = 'none';
     skinsTab.style.backgroundColor = '#290c9a';
-    upgradesTab.style.backgroundColor = '#444';
+    powerupsTab.style.backgroundColor = '#444';
 });
 
-upgradesTab.addEventListener('click', () => {
+powerupsTab.addEventListener('click', () => {
     skinsSection.style.display = 'none';
-    upgradesSection.style.display = 'grid';
-    upgradesTab.style.backgroundColor = '#290c9a';
+    powerupsSection.style.display = 'grid';
+    powerupsTab.style.backgroundColor = '#290c9a';
     skinsTab.style.backgroundColor = '#444';
 });
 

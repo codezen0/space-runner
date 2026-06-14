@@ -83,8 +83,8 @@
             <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                 <button id="skinsTab"
                     style="padding: 8px 20px; font-size: 16px; cursor: pointer; background-color: #290c9a; color: white; border: none; border-radius: 3px;">Skins</button>
-                <button id="upgradesTab"
-                    style="padding: 8px 20px; font-size: 16px; cursor: pointer; background-color: #444; color: white; border: none; border-radius: 3px;">Upgrades</button>
+                <button id="powerupsTab"
+                    style="padding: 8px 20px; font-size: 16px; cursor: pointer; background-color: #444; color: white; border: none; border-radius: 3px;">Powerups</button>
             </div>
 
             <!-- Skins Section -->
@@ -124,8 +124,8 @@
                 </div>
             </div>
 
-            <!-- Upgrades Section -->
-            <div id="upgradesSection"
+            <!-- Powerups Section -->
+            <div id="powerupsSection"
                 style="display: none; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 90%; max-height: 320px; overflow-y: auto; padding: 10px; box-sizing: border-box;">
                 <div style="background: #222; padding: 10px; border: 1px solid #444; text-align: center;">
                     <div
