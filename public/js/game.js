@@ -1,9 +1,9 @@
 
 // Boss Assets
 const bossList = [
-    { name: "POGSHIT", img: "/img/pogshit.png", color: "violet" },
-    { name: "STAR-KILLER", img: "/img/starkiller.png", color: "cyan" },
-    { name: "VOID-REAPER", img: "/img/voidreaper.png", color: "orange" }
+    { name: "POGSHIT LORD", img: "/img/pogshit.png", color: "violet" },
+    { name: "TASGA BOY", img: "/img/tasga_boy.jpg", color: "cyan" },
+    { name: "KOREAN BOY", img: "/img/korean_boy.jpg", color: "orange" }
 ];
 let currentBossIndex = 0;
 
@@ -214,12 +214,32 @@ function update() {
 }
 
 function updateBoss() {
-    // Boss floats up and down
-    bossY = (canvas.height / 2 - 50) + Math.sin(Date.now() / 500) * 100;
+    let b = bossList[currentBossIndex];
+
+    // Difficulty and move sets based on current boss
+    let fireInterval = 2000;
     
-    // Track how long the boss has been here
+    // Movement modifications
+    if (currentBossIndex === 0) {
+        // POGSHIT LORD: Slowest, standard sine wave
+        bossY = (canvas.height / 2 - 50) + Math.sin(Date.now() / 500) * 100;
+        fireInterval = 1500;
+    } else if (currentBossIndex === 1) {
+        // TASGA BOY: Faster sine wave with larger amplitude
+        bossY = (canvas.height / 2 - 50) + Math.sin(Date.now() / 300) * 150;
+        fireInterval = 1000; // shoots much faster
+    } else if (currentBossIndex === 2) {
+        // KOREAN BOY: Erratic and fast movement
+        bossY = (canvas.height / 2 - 50) + Math.sin(Date.now() / 200) * 200 + Math.cos(Date.now() / 350) * 80;
+        fireInterval = 700; // fastest shooter
+    }
+    
+    // Limit boss Y to canvas boundaries to avoid going off-screen
+    bossY = Math.max(0, Math.min(canvas.height - 100, bossY));
+
+    // Track how long the boss has been here (running at 60fps)
     bossDuration++;
-    if (bossDuration >= 3600) { 
+    if (bossDuration >= 2400) { // 40 seconds duration
         bossActive = false;
         bossDuration = 0;
         bossProjectiles = [];
@@ -230,18 +250,52 @@ function updateBoss() {
         return;
     }
 
-    // Boss shoots every 2 seconds
-    if (Date.now() % 2000 < 20) {
-        bossProjectiles.push({
-            x: canvas.width - 150,
-            y: bossY + 50,
-            speed: 10
-        });
+    // Boss Shooting Logic
+    if (!b.lastShot) b.lastShot = 0;
+    if (Date.now() - b.lastShot > fireInterval) {
+        b.lastShot = Date.now();
+        
+        if (currentBossIndex === 0) {
+            // POGSHIT LORD: Single fast projectile
+            bossProjectiles.push({
+                x: canvas.width - 150,
+                y: bossY + 50,
+                vx: -12,
+                vy: 0
+            });
+        } else if (currentBossIndex === 1) {
+            // TASGA BOY: 3-way spread shot
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -10, vy: -3 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -12, vy: 0 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -10, vy: 3 });
+        } else if (currentBossIndex === 2) {
+            // KOREAN BOY: 5-way spread + targeting player occasionally
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -13, vy: -4 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -14, vy: -2 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -18, vy: 0 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -14, vy: 2 });
+            bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: -13, vy: 4 });
+            
+            // Targeted projectile towards player
+            if (Math.random() < 0.6) {
+                let dx = (playerx + playerWidth/2) - (canvas.width - 150);
+                let dy = (playery + playerHeight/2) - (bossY + 50);
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                let tx = (dx / dist) * 14;
+                let ty = (dy / dist) * 14;
+                bossProjectiles.push({ x: canvas.width - 150, y: bossY + 50, vx: tx, vy: ty });
+            }
+        }
     }
 
     // Update Projectiles
-    bossProjectiles.forEach((p, index) => {
-        p.x -= p.speed;
+    for (let index = bossProjectiles.length - 1; index >= 0; index--) {
+        let p = bossProjectiles[index];
+        // Fallback for older style projectiles
+        if (p.vx === undefined) { p.vx = -p.speed; p.vy = 0; }
+        
+        p.x += p.vx;
+        p.y += p.vy;
         
         // Collision with player
         if (!isInvincible && 
@@ -258,10 +312,14 @@ function updateBoss() {
             } else {
                 gameOver();
             }
+            continue; // Skip the bounds check if it hit the player
         }
 
-        if (p.x < 0) bossProjectiles.splice(index, 1);
-    });
+        // Clean up out of bounds
+        if (p.x < -50 || p.y < -50 || p.y > canvas.height + 50) {
+            bossProjectiles.splice(index, 1);
+        }
+    }
 }
 
 function drawBoss() {
